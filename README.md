@@ -102,30 +102,83 @@ public class MainApp {
         scanner.close();
     }
 }
-1. Inisialisasi Program
-Program menggunakan beberapa kelas dari package models yang kemungkinan besar berisi definisi untuk berbagai jenis container seperti RefrigeratedContainer, DryStorageContainer, dll.
-Objek ContainerManager dibuat untuk mengelola container. Objek ini berfungsi untuk menambah, menampilkan, memperbarui, dan menghapus container.
-Awalnya, 5 container dengan berbagai tipe secara otomatis ditambahkan ke manager menggunakan metode addContainer.
-2. Menu Utama
-Program menampilkan menu utama dalam loop while yang terus berlanjut hingga pengguna memilih untuk keluar. Menu ini memungkinkan pengguna untuk memilih opsi berikut:
-Tambah Container:
-Pengguna memasukkan ID, tipe container, dan berat container.
-Berdasarkan tipe yang dipilih, program meminta input tambahan sesuai tipe container, misalnya untuk tipe Refrigerated, pengguna juga diminta memasukkan kapasitas pendingin.
-Setelah input lengkap, container yang sesuai dibuat dan ditambahkan ke manager.
-Tampilkan Semua Container:
-Memanggil metode displayAllContainers() untuk menampilkan daftar semua container yang ada.
-Update Container:
-Meminta ID dari container yang akan diupdate, tipe baru, dan berat baru.
-Kemudian memanggil metode updateContainer() dengan data baru untuk memperbarui informasi container.
-Hapus Container:
-Meminta ID container yang ingin dihapus, lalu memanggil metode deleteContainer() untuk menghapus container dari manager.
-Keluar:
-Mengakhiri loop while dan keluar dari program.
-3. Validasi dan Error Handling
-Pada saat menambah container, program memverifikasi tipe container yang valid. Jika tipe yang dimasukkan tidak valid, pesan error akan ditampilkan.
-Di setiap langkah, program menampilkan jumlah total container yang saat ini ada di sistem dengan memanggil ContainerManager.totalContainers.
-4. Penggunaan Scanner
-Program menggunakan objek Scanner untuk membaca input dari pengguna melalui konsol. Metode nextLine() digunakan untuk membaca string dan nextDouble() untuk membaca nilai numerik. Metode nextLine() juga digunakan setelah membaca nilai numerik untuk mengkonsumsi karakter newline.
-5. Terminasi Program
-Program akan berhenti jika pengguna memilih opsi 5 (Keluar), dan scanner.close() dipanggil untuk menutup objek Scanner serta melepaskan sumber daya yang digunakan.
 
+# Struktur Program
+Dengan berbagai kelas dan antarmuka yang memfasilitasi manajemen kontainer, struktur kode terdiri dari beberapa paket dan kelas:
+1. Package manajemen – Berisi kelas MainAppuntuk menjalankan aplikasi.
+2. Package models – Berisi interface CRUDOperations dan beberapa class untuk container dan manajer container:
+   - Container (abstract class)
+   - Subclass container: RefrigeratedContainer, DryStorageContainer, FlatRackContainer, ISOTankContainer, dan OpenTopContainer.
+   - ContainerManager untuk mengelola operasi CRUD.
+# Cara Kerja Program
+1. MainApp sebagai Entry Point
+   Kelas MainApp berfungsi sebagai titik masuk utama yang menangani logika aplikasi melalui input pengguna. Program ini menggunakan Scanner untuk membaca input dari pengguna.
+   * Inisialisasi Awal:
+     - Scanner dibuka untuk membaca input.
+     - Objek ContainerManager dibuat untuk mengelola daftar container.
+     - Secara otomatis, 5 container ditambahkan sebagai data awal (contoh instansiasi dari subclass seperti RefrigeratedContainer, DryStorageContainer, dll.).
+       manager.addContainer(new RefrigeratedContainer("C001", 1000.5, 25.0));
+       manager.addContainer(new DryStorageContainer("C002", 2000.75));
+   * Looping Menu Utama: Program menggunakan while untuk menampilkan menu secara berulang hingga pengguna memilih opsi keluar.
+2. Operasi CRUD yang Dikelola oleh ContainerManager
+   Detail fungsi yang tersedia di menu:
+   a. Tambah Container (Opsi 1)
+   - Pengguna diminta memasukkan ID, tipe container, dan berat.
+   - Berdasarkan tipe yang dipilih, program membuat objek dari subclass yang sesuai.
+     if (type.equalsIgnoreCase("Refrigerated")) {
+    System.out.print("Masukkan Kapasitas Pendingin (kW): ");
+    double coolingCapacity = scanner.nextDouble();
+    manager.addContainer(new RefrigeratedContainer(id, weight, coolingCapacity));
+}
+   b. Tampilkan Semua Container (Opsi 2)
+   - ContainerManager memanggil fungsi displayAllContainers().
+     * Jika daftar container kosong, program menampilkan pesan bahwa tidak ada container.
+     * Jika ada container, setiap container akan memanggil metode displayInfo() miliknya untuk mencetak detailnya.
+     * public void displayAllContainers() {
+    for (Container container : containers) {
+        container.displayInfo();
+    }
+}
+    c. Update Container (Opsi 3)
+    - Pengguna memasukkan ID container yang akan di-update, bersama tipe dan berat baru.
+    - Program melakukan pencarian berdasarkan ID. Jika ditemukan, data diubah melalui setter yang ada pada class Container.
+      for (Container container : containers) {
+    if (container.getId().equals(id)) {
+        container.setType(newType);
+        container.setWeight(newWeight);
+    }
+}
+    - Jika ID tidak ditemukan, pesan error akan muncul.
+    d. Hapus Container (Opsi 4)
+    - Pengguna memasukkan ID container yang akan dihapus.
+    - Jika ID ditemukan, program menghapus container dari list dan mengurangi jumlah total container.
+      containers.remove(container);
+      totalContainers--;
+      - Jika tidak ditemukan, pesan error akan ditampilkan.
+    e. Keluar dari Program (Opsi 5)
+    - Program menghentikan looping menu dan menampilkan pesan keluar. Scanner ditutup untuk menghindari kebocoran resource.
+3. Implementasi Polimorfisme dengan Subclass Container
+   Setiap jenis container adalah subclass dari Container, dan setiap subclass memiliki implementasi unik dari displayInfo().
+   - Contoh Implementasi Subclass:
+     public class RefrigeratedContainer extends Container {
+    private final double coolingCapacity;
+
+    @Override
+    public void displayInfo() {
+        System.out.println("Container ID: " + getId());
+        System.out.println("Cooling Capacity: " + coolingCapacity + " kW");
+    }
+}
+    - Ini menunjukkan polimorfisme, di mana setiap objek container memiliki cara berbeda untuk menampilkan informasi.
+4. Interface CRUDOperations sebagai Kontrak
+   Class ContainerManager mengimplementasikan interface CRUDOperations, yang mendefinisikan operasi dasar CRUD (Create, Read, Update, Delete).
+   public interface CRUDOperations {
+    void addContainer(Container container);
+    void displayAllContainers();
+    void updateContainer(String id, String newType, double newWeight);
+    void deleteContainer(String id);
+}
+5. Manajemen List dan Data dengan ContainerManager
+   - ArrayList digunakan untuk menyimpan objek container.
+   - Setiap kali container ditambahkan atau dihapus, variabel totalContainers diperbarui.
+     
