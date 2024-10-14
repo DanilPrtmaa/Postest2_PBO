@@ -95,7 +95,49 @@ System.out.print("Masukkan ID Container: ");
 String deleteId = scanner.nextLine();
 manager.deleteContainer(deleteId);
 
+1. Inheritance
+Inheritance diimplementasikan melalui kelas Container yang merupakan kelas abstrak. Kelas ini menjadi superclass untuk berbagai jenis kontainer seperti RefrigeratedContainer, DryStorageContainer,           FlatRackContainer, ISOTankContainer, dan OpenTopContainer. Setiap kelas kontainer spesifik mewarisi properti dan metode dari kelas Container, sehingga mengurangi duplikasi kode dan memfasilitasi pemeliharaan.
 Struktur Folder dan File
+Contoh Penerapan:
+public class DryStorageContainer extends Container {
+    ...
+}
+
+2. Encapsulation
+Enkapsulasi diterapkan dengan menggunakan modifier akses untuk membatasi akses ke variabel dan metode. Dalam kelas Container, semua atribut (seperti id, type, dan weight) dideklarasikan sebagai private, sehingga tidak dapat diakses langsung dari luar kelas. Akses ke atribut tersebut dilakukan melalui metode getter dan setter. Contohnya, getId(), getType(), dan setWeight(double weight).
+Contoh Penerapan:
+private String id;
+
+public String getId() {
+    return id;
+}
+
+public void setId(String id) {
+    this.id = id;
+}
+
+3. Abstraction
+Abstraksi diterapkan melalui penggunaan antarmuka (interface) dan kelas abstrak. Interface CRUDOperations mendefinisikan metode yang harus diimplementasikan oleh kelas ContainerManager, yang berfungsi untuk operasi CRUD (Create, Read, Update, Delete). Kelas Container juga merupakan kelas abstrak yang mendefinisikan metode displayInfo(), yang diimplementasikan oleh kelas-kelas turunan. Hal ini membantu menyederhanakan kompleksitas dan membuat kode lebih mudah dibaca dan dikelola.
+public abstract class Container {
+    public abstract void displayInfo();
+}
+
+4. Interface
+Interface CRUDOperations berisi metode untuk melakukan operasi CRUD pada kontainer. Kelas ContainerManager mengimplementasikan interface ini, yang memaksa kelas tersebut untuk menyediakan implementasi untuk setiap metode yang didefinisikan di interface. Ini membuat kode lebih modular dan terstruktur dengan baik.
+public interface CRUDOperations {
+    void addContainer(Container container);
+    void displayAllContainers();
+    void updateContainer(String id, String newType, double newWeight);
+    void deleteContainer(String id);
+}
+
+5. Final Keyword
+Keyword final digunakan dalam kelas ContainerManager dan kelas-kelas kontainer seperti DryStorageContainer, FlatRackContainer, ISOTankContainer, OpenTopContainer, dan RefrigeratedContainer. Menandai kelas dengan final berarti kelas tersebut tidak dapat diturunkan lebih lanjut, sehingga mengamankan fungsionalitas kelas tersebut. Di samping itu, variabel totalContainers dalam kelas ContainerManager juga dideklarasikan sebagai final, menunjukkan bahwa nilai tersebut tidak dapat diubah setelah diinisialisasi.
+public final class ContainerManager implements CRUDOperations {
+    ...
+}
+
+
 /manajemen-sistem-peti-kemas
 │
 ├── /manajemen
